@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CriptoBot Enterprise | Advanced AI Ecosystem</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. CSS VARIABLES, RESET & THEMES
+           ========================================================================== */
+        :root {
+            --brand-primary: #0075eb;
+            --brand-primary-hover: #005bb5;
+            --brand-dark: #191c1f;
+            --bg-main: #f4f7f9;
+            --bg-card: #ffffff;
+            --text-main: #191c1f;
+            --text-muted: #637381;
+            --success: #00d27a;
+            --danger: #ff3b30;
+            --warning: #ffcc00;
+            --border-light: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(149, 157, 165, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition-fast: 0.2s ease;
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-theme {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-light: #334155;
+            --brand-dark: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+            line-height: 1.5;
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+            transition: background-color var(--transition-fast), color var(--transition-fast);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 10px; }
+
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .mt-1 { margin-top: 8px; } .mt-2 { margin-top: 16px; } .mt-3 { margin-top: 24px; }
+        .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+
+        /* ==========================================================================
+           2. AUTHENTICATION MODULE (LOGIN / REGISTER)
+           ========================================================================== */
+        #auth-view { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-card); padding: 20px; animation: fadeIn var(--transition-slow); }
+        .auth-container { width: 100%; max-width: 420px; }
+        .auth-header { text-align: center; margin-bottom: 40px; }
+        .auth-header h1 { font-size: 36px; font-weight: 800; color: var(--brand-primary); letter-spacing: -1.5px; margin-bottom: 8px; }
+        .auth-header p { color: var(--text-muted); font-size: 15px; }
+        
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; margin-left: 4px; }
+        .custom-input { width: 100%; padding: 16px 20px; border: 2px solid var(--border-light); border-radius: var(--radius-md); font-size: 16px; background: var(--bg-main); color: var(--text-main); transition: var(--transition-fast); font-family: inherit; }
+        .custom-input:focus { outline: none; border-color: var(--brand-primary); background: var(--bg-card); box-shadow: 0 0 0 4px rgba(0, 117, 235, 0.1); }
+        .custom-input::placeholder { color: #94a3b8; }
+        .iti { width: 100%; }
+        
+        .btn-main { width: 100%; padding: 18px; background: var(--brand-primary); color: #ffffff; border: none; border-radius: 100px; font-size: 16px; font-weight: 700; cursor: pointer; transition: var(--transition-fast); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-main:hover { background: var(--brand-primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-main:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ==========================================================================
+           3. DASHBOARD & NAVIGATION
+           ========================================================================== */
+        #app-view { padding-bottom: 100px; min-height: 100vh; }
+        .app-header { background: var(--bg-card); padding: 16px 24px; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm); }
+        .app-header-title { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+        
+        .header-icons { display: flex; gap: 16px; align-items: center; }
+        .icon-btn { cursor: pointer; color: var(--text-main); transition: var(--transition-fast); position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-main); }
+        .icon-btn:hover { color: var(--brand-primary); background: var(--border-light); }
+        .notification-dot { position: absolute; top: 8px; right: 10px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg-main); }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 80px; background: var(--bg-card); border-top: 1px solid var(--border-light); display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 25%; height: 100%; transition: var(--transition-fast); }
+        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; transition: var(--transition-fast); fill: currentColor; }
+        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item.active { color: var(--brand-primary); }
+        .nav-item.active svg { transform: translateY(-4px); }
+
+        /* ==========================================================================
+           4. WIDGETS & CARDS
+           ========================================================================== */
+        .tab-content { display: none; padding: 20px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); max-width: 600px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .balance-widget { background: var(--bg-card); border-radius: var(--radius-xl); padding: 32px 24px; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 24px; position: relative; overflow: hidden; border: 1px solid var(--border-light); }
+        .balance-widget::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--brand-primary), #00d27a); }
+        .balance-label { color: var(--text-muted); font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .balance-amount { font-size: 48px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; margin: 12px 0; line-height: 1; }
+        
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 210, 122, 0.1); color: var(--success); padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 210, 122, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 210, 122, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 210, 122, 0); } }
+
+        .card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+        .card-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: var(--text-main); }
+        
+        .btn-action { width: 100%; padding: 16px; border-radius: var(--radius-md); border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition-fast); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary-action { background: var(--brand-primary); color: #fff; }
+        .btn-primary-action:hover { background: var(--brand-primary-hover); }
+        .btn-secondary-action { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-light); }
+
+        /* Lists (Markets & Logs) */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 12px; border: 1px solid var(--border-light); transition: var(--transition-fast); }
+        .list-item:hover { border-color: var(--brand-primary); }
+        .list-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-right: 14px; font-weight: 800; color: #fff; }
+        .list-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .list-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
+        .list-subtitle { font-size: 13px; font-weight: 700; margin-top: 4px; color: var(--brand-primary); }
+        .list-value { font-weight: 800; font-size: 15px; color: var(--text-main); text-align: right; }
+
+        .bot-log-item { position: relative; padding: 16px 16px 16px 20px; background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 16px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--success); }
+        .log-time { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+        .log-action { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .log-profit { font-size: 15px; font-weight: 800; color: var(--success); margin-top: 4px; }
+
+        /* ==========================================================================
+           5. MODALS, TOASTS & SETTINGS TOGGLES
+           ========================================================================== */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 600px; border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 32px 24px; transform: translateY(100%); transition: var(--transition-slow); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.open .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; color: var(--text-main); }
+        .modal-close { background: var(--bg-main); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; color: var(--text-main); }
+
+        /* Toggle Switch */
+        .toggle-switch { position: relative; display: inline-block; width: 52px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-light); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--brand-primary); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* Toasts */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
+        .toast { background: #191c1f; color: #fff; padding: 14px 20px; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg); animation: toastIn 0.3s forwards, toastOut 0.3s ease 3.5s forwards; display: flex; align-items: center; gap: 12px; line-height: 1.4; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+
+    <div id="auth-view">
+        <div class="auth-container">
+            <div class="auth-header">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style="margin-bottom: 16px;">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="var(--brand-primary)"/>
+                    <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="var(--brand-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>CriptoBot</h1>
+                <p>Единен портал за Вход и Регистрация</p>
+            </div>
+
+            <form id="registration-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="auth-email" class="custom-input" placeholder="Въведете вашия имейл" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" class="custom-input" placeholder="Парола (минимум 6 символа)" required minlength="6">
+                </div>
+                <div id="new-user-fields">
+                    <div class="input-group">
+                        <label>Mobile Number (Само при нова регистрация)</label>
+                        <input type="tel" id="auth-phone" class="custom-input">
+                    </div>
+                    <div class="input-group">
+                        <label>Full Name (Само при нова регистрация)</label>
+                        <input type="text" id="auth-name" class="custom-input" placeholder="Име и Фамилия">
+                    </div>
+                </div>
+                
+                <p style="font-size: 12px; color: var(--text-muted); text-align: center; margin: 20px 0;">
+                    Системата автоматично проверява дали имате профил. Ако имате, ще ви впише. Ако нямате, ще създаде нов.
+                </p>
+                
+                <button type="submit" class="btn-main" id="btn-submit-auth">
+                    <span>Продължи сигурно</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-view" class="hidden">
+        
+        <header class="app-header">
+            <div class="flex items-center gap-3">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--brand-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;" id="user-initials">CB</div>
+                <div class="app-header-title" id="header-title-text" style="color: var(--text-main);">Home</div>
+            </div>
+            <div class="header-icons">
+                <div class="icon-btn" onclick="openModal('modal-settings-user')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <div class="icon-btn" onclick="showToast('Системата е защитена. Няма нови известия.', 'info')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div class="notification-dot"></div>
+                </div>
+            </div>
+        </header>
+
+        <main id="tab-home" class="tab-content active">
+            <div class="balance-widget">
+                <div class="balance-label">Total Portfolio Value</div>
+                <div class="balance-amount" id="ui-main-balance">€0.00</div>
+                <div class="status-badge" id="ai-status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="ai-status-text">AI Bot Standby</span>
+                </div>
+                <div class="flex gap-2 mt-3" style="gap: 12px;">
+                    <button class="btn-action btn-primary-action" onclick="openModal('modal-deposit')">Deposit</button>
+                    <button class="btn-action btn-secondary-action" onclick="switchTab('wallet', 'Wallet', document.querySelectorAll('.nav-item')[2])">Withdraw</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Account Verified</div>
+                <div class="flex justify-between py-2 border-b" style="border-bottom: 1px solid var(--border-light);">
+                    <span style="color: var(--text-muted); font-size: 14px;">User Name</span>
+                    <span class="font-bold" style="color: var(--text-main);" id="ui-name-mask">Loading...</span>
+                </div>
+                <div class="flex justify-between py-2 border-b" style="border-bottom: 1px solid var(--border-light);">
+                    <span style="color: var(--text-muted); font-size: 14px;">Email Linked</span>
+                    <span class="font-bold" style="color: var(--text-main);" id="ui-email-mask">***@***.com</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span style="color: var(--text-muted); font-size: 14px;">Phone Number</span>
+                    <span class="font-bold" style="color: var(--text-main);" id="ui-phone-mask">+*** **** ****</span>
+                </div>
+            </div>
+        </main>
+
+        <main id="tab-markets" class="tab-content">
+            <div class="flex justify-between items-center mb-3">
+                <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main);">Live Crypto Markets</h2>
+            </div>
+            <div id="crypto-list-container">
+                <div style="text-align:center; padding:40px; color:var(--text-muted);">Fetching live market data...</div>
+            </div>
+        </main>
+
+        <main id="tab-wallet" class="tab-content">
+            <div class="balance-widget" style="padding: 24px;">
+                <div class="balance-label">Available for Withdrawal</div>
+                <div class="balance-amount" id="ui-wallet-balance" style="font-size: 40px;">€0.00</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Withdraw Funds</div>
+                <div style="background: rgba(255, 204, 0, 0.1); border-left: 4px solid var(--warning); padding: 12px; font-size: 12px; margin-bottom: 20px; border-radius: 4px; color: var(--text-main);">
+                    <strong>Note:</strong> Withdrawals will be sent to the Crypto Address specified in your settings.
+                </div>
+                <div class="input-group">
+                    <label>Amount in EUR</label>
+                    <input type="number" id="wd-amount" class="custom-input" placeholder="E.g. 150.00" min="50">
+                </div>
+                <button class="btn-action btn-primary-action mt-2" onclick="processWithdrawal()">Submit Request</button>
+            </div>
+        </main>
+
+        <main id="tab-bot" class="tab-content">
+            <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--text-main);">Execution Logs</h2>
+            <div id="bot-logs-container">
+                <div id="actual-logs-wrapper">
+                    <div style="text-align:center; padding:40px; color:var(--text-muted);">Waiting for AI activity...</div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home', 'Dashboard', this)">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('markets', 'Markets', this)">
+                <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Markets</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('wallet', 'Wallet', this)">
+                <svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 2-2h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12h.01"/></svg>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('bot', 'AI Trading Logs', this)">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                <span>AI Logs</span>
+            </div>
+        </nav>
+    </div>
+
+    <div id="modal-settings-user" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 24px; font-weight: 800;">Preferences</h2>
+                <button class="modal-close" onclick="closeModal('modal-settings-user')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between items-center mb-3 pb-3" style="border-bottom: 1px solid var(--border-light);">
+                    <div style="color: var(--text-main);">
+                        <div style="font-weight: 800; font-size: 16px;">Dark Mode</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Switch application theme</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="input-group mt-3">
+                    <label style="color: var(--text-main);">Your Crypto Withdrawal Address</label>
+                    <input type="text" id="user-crypto-wallet" class="custom-input" placeholder="Paste wallet address here (USDT/BTC/ETH)...">
+                </div>
+                <button class="btn-action btn-primary-action mt-2" onclick="saveWalletAddress()">
+                    Save Wallet Address
+                </button>
+            </div>
+            
+            <button class="btn-action mt-3" style="background: rgba(255,59,48,0.1); color: var(--danger); border: 1px solid rgba(255,59,48,0.3);" onclick="handleLogout()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Secure Log Out
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-deposit" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 24px; font-weight: 800;">Deposit Funds</h2>
+                <button class="modal-close" onclick="closeModal('modal-deposit')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div class="text-center">
+                <div style="background: #fff; padding: 10px; display: inline-block; border-radius: 16px; margin-bottom: 24px;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=0x412De5B79a293BD9b69338f938f578215AD88dDc" alt="QR Code" style="display: block; border-radius: 8px;">
+                </div>
+                <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text-main);">Send Tether USD (BEP20)</h3>
+                <div style="background: var(--bg-main); border: 2px dashed var(--border-light); padding: 16px; border-radius: var(--radius-md); font-family: monospace; font-size: 13px; font-weight: 600; color: var(--text-main); word-break: break-all; margin-bottom: 24px; cursor: pointer;" onclick="copyToClipboard('0x412De5B79a293BD9b69338f938f578215AD88dDc', 'Address Copied!')">
+                    0x412De5B79a293BD9b69338f938f578215AD88dDc
+                </div>
+                <button class="btn-action btn-primary-action" onclick="confirmDeposit()">I have sent the funds</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+        import { getDatabase, ref, set, get, query, orderByChild, equalTo, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+        // 1. FIREBASE CONFIGURATION (Original keys preserved)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqJH2NjEJnRhQ0MKgCsAXUS-q5p4YPHaU",
+            authDomain: "criptobot7777.firebaseapp.com",
+            projectId: "criptobot7777",
+            databaseURL: "https://criptobot7777-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "criptobot7777.firebasestorage.app",
+            messagingSenderId: "185401450310",
+            appId: "1:185401450310:web:ba330cce0e3bc8da75cf47"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 2. GLOBAL STATE
+        const AppState = {
+            user: { id: null, data: null },
+            marketData: [],
+            system: { currentTab: 'home' }
+        };
+
+        // 3. UI CONTROLLER
+        const UI = {
+            phoneInput: window.intlTelInput(document.querySelector("#auth-phone"), {
+                preferredCountries: ["bg", "gb", "us", "de"],
+                separateDialCode: true,
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            }),
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                
+                let icon = '';
+                if(type === 'success') icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d27a" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                else if(type === 'error') icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+                else icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0075eb" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+
+                toast.innerHTML = `${icon} <span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { if(container.contains(toast)) toast.remove(); }, 3500);
+            },
+
+            switchTab(tabId, titleText, element) {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                if(element) element.classList.add('active');
+                document.getElementById('header-title-text').innerText = titleText;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                if(tabId === 'markets' && AppState.marketData.length === 0) {
+                    MarketAPI.fetchLivePrices();
+                }
+            },
+
+            openModal(modalId) { document.getElementById(modalId).classList.add('open'); document.body.style.overflow='hidden'; },
+            closeModal(modalId) { document.getElementById(modalId).classList.remove('open'); document.body.style.overflow=''; },
+
+            updateUserInterface(userData) {
+                const eur = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
+                document.getElementById('ui-main-balance').innerText = eur.format(userData.balance || 0);
+                document.getElementById('ui-wallet-balance').innerText = eur.format(userData.balance || 0);
+                
+                const names = (userData.fullName || "User").split(' ');
+                const initials = names.length > 1 ? names[0][0] + names[1][0] : names[0].substring(0,2);
+                document.getElementById('user-initials').innerText = initials.toUpperCase();
+                
+                if(userData.fullName) document.getElementById('ui-name-mask').innerText = userData.fullName;
+                if(userData.email) document.getElementById('ui-email-mask').innerText = userData.email;
+                if(userData.phone) document.getElementById('ui-phone-mask').innerText = userData.phone;
+                
+                if(userData.cryptoAddress) {
+                    document.getElementById('user-crypto-wallet').value = userData.cryptoAddress;
+                }
+
+                if((userData.balance || 0) > 0) {
+                    document.getElementById('ai-status-text').innerText = 'AI Active';
+                    document.querySelector('.status-dot').style.background = 'var(--success)';
+                    LiveTradingEngine.start();
+                    LiveTradingEngine.renderHistory(userData.trades);
+                }
+            }
+        };
+
+        // 4. SMART AUTHENTICATION LOGIC (Login or Register in one form)
+        const AuthLogic = {
+            init() {
+                const storedUID = localStorage.getItem('criptobot_enterprise_uid');
+                if(storedUID) {
+                    AppState.user.id = storedUID;
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-view').classList.remove('hidden');
+                    this.startRealtimeSync();
+                }
+
+                document.getElementById('registration-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('btn-submit-auth');
+                    
+                    const email = document.getElementById('auth-email').value.toLowerCase().trim();
+                    const password = document.getElementById('auth-password').value; 
+                    const phone = UI.phoneInput.getNumber() || "";
+                    const name = document.getElementById('auth-name').value;
+
+                    if(password.length < 6) return UI.showToast("Паролата трябва да е поне 6 символа.", "error");
+
+                    btn.disabled = true;
+                    btn.innerHTML = 'Проверка на данните...';
+
+                    try {
+                        const usersRef = ref(db, 'users');
+                        
+                        // STEP 1: Check if Email exists
+                        const emailQuery = query(usersRef, orderByChild('email'), equalTo(email));
+                        const emailSnap = await get(emailQuery);
+                        
+                        if (emailSnap.exists()) {
+                            // Account exists -> Check Password
+                            const userData = Object.values(emailSnap.val())[0];
+                            const userUid = Object.keys(emailSnap.val())[0];
+                            
+                            if (userData.password === password) {
+                                localStorage.setItem('criptobot_enterprise_uid', userUid);
+                                UI.showToast("Успешен вход! Зареждане...", "success");
+                                setTimeout(() => window.location.reload(), 1000);
+                            } else {
+                                UI.showToast("Грешна парола! Вече имате профил, моля въведете правилната парола.", "error");
+                                btn.disabled = false; btn.innerHTML = 'Продължи сигурно';
+                            }
+                            return; 
+                        }
+
+                        // STEP 2: Email is new -> Process Registration
+                        if(name.length < 3 || phone.length < 6) {
+                            UI.showToast("Имейлът не е регистриран. Моля, попълнете Телефон и Име за нова регистрация.", "error");
+                            btn.disabled = false; btn.innerHTML = 'Продължи сигурно';
+                            return;
+                        }
+
+                        // STEP 3: Check for duplicate Phone Number
+                        const phoneQuery = query(usersRef, orderByChild('phone'), equalTo(phone));
+                        const phoneSnap = await get(phoneQuery);
+                        
+                        if (phoneSnap.exists()) {
+                            UI.showToast("Този телефонен номер вече е регистриран към друг профил!", "error");
+                            btn.disabled = false; btn.innerHTML = 'Продължи сигурно';
+                            return;
+                        }
+
+                        // STEP 4: All Clear -> Create new permanent UID Profile
+                        btn.innerHTML = 'Създаване на профил...';
+                        const newId = "usr_" + crypto.randomUUID().replace(/-/g, '').substring(0, 16);
+                        
+                        await set(ref(db, `users/${newId}`), {
+                            fullName: name,
+                            email: email,
+                            phone: phone,
+                            password: password,
+                            cryptoAddress: "", // Setup for settings gear
+                            balance: 0,
+                            createdAt: serverTimestamp(),
+                            lastActive: new Date().toISOString()
+                        });
+                        
+                        localStorage.setItem('criptobot_enterprise_uid', newId);
+                        UI.showToast("Профилът е създаден успешно!", "success");
+                        setTimeout(() => window.location.reload(), 1000);
+
+                    } catch(error) {
+                        UI.showToast("Проблем с връзката към сървъра. Опитайте пак.", "error");
+                        btn.disabled = false; btn.innerHTML = 'Продължи сигурно';
+                    }
+                });
+            },
+
+            startRealtimeSync() {
+                const userRef = ref(db, `users/${AppState.user.id}`);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        AppState.user.data = data;
+                        UI.updateUserInterface(data);
+                    } else {
+                        this.logout();
+                    }
+                });
+            },
+            logout() { localStorage.removeItem('criptobot_enterprise_uid'); window.location.reload(); }
+        };
+
+        // 5. LIVE MARKET DATA (Dynamic UI generation to save code lines)
+        const MarketAPI = {
+            async fetchLivePrices() {
+                try {
+                    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=15&page=1&sparkline=false');
+                    if(!res.ok) return;
+                    
+                    const data = await res.json();
+                    AppState.marketData = data;
+                    
+                    let html = '';
+                    data.forEach(coin => {
+                        const price = coin.current_price;
+                        const change = coin.price_change_percentage_24h || 0;
+                        const isPos = change >= 0;
+                        const colorClass = isPos ? 'text-success' : 'text-danger';
+                        const sign = isPos ? '+' : '';
+                        
+                        html += `
+                            <div class="list-item">
+                                <div class="flex items-center">
+                                    <div class="list-icon" style="background: ${isPos ? 'var(--brand-primary)' : 'var(--brand-dark)'}">
+                                        ${coin.image ? `<img src="${coin.image}">` : coin.symbol[0].toUpperCase()}
+                                    </div>
+                                    <div class="list-content">
+                                        <div class="list-title">${coin.name} <span style="font-size:10px; color:var(--text-muted);">${coin.symbol.toUpperCase()}</span></div>
+                                        <div class="list-subtitle">Vol: ${(coin.total_volume/1000000).toFixed(1)}M</div>
+                                    </div>
+                                </div>
+                                <div class="list-value-box">
+                                    <div class="list-value">€${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})}</div>
+                                    <div class="list-subtitle ${colorClass}" style="margin-top:4px;">${sign}${change.toFixed(2)}%</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('crypto-list-container').innerHTML = html;
+                } catch(e) {
+                    console.log("Market fetch error");
+                }
+            }
+        };
+
+        // 6. AI TRADING SIMULATOR LOGIC
+        const LiveTradingEngine = {
+            interval: null,
+            start() {
+                if(this.interval) return;
+                this.interval = setInterval(async () => {
+                    const u = AppState.user.data;
+                    if(!u || u.balance <= 0) return;
+
+                    const profitEuro = u.balance * ((Math.random() * 0.003) + 0.001);
+                    try {
+                        const nowISO = new Date().toISOString();
+                        await set(ref(db, `users/${AppState.user.id}/balance`), u.balance + profitEuro);
+                        await set(ref(db, `users/${AppState.user.id}/lastActive`), nowISO); 
+                        await push(ref(db, `users/${AppState.user.id}/trades`), {
+                            pair: "AI SCALP", strategy: "Auto Accumulation", profit: profitEuro, timestamp: nowISO
+                        });
+                    } catch(err) {}
+                }, 60000); // 1 minute intervals
+            },
+            renderHistory(tradesData) {
+                const wrapper = document.getElementById('actual-logs-wrapper');
+                if(!tradesData) return;
+                const arr = Object.values(tradesData).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,30);
+                wrapper.innerHTML = arr.map(t => `
+                    <div class="bot-log-item">
+                        <div class="log-time">${new Date(t.timestamp).toLocaleTimeString()} | ${t.strategy}</div>
+                        <div class="log-action">Trade executed successfully</div>
+                        <div class="log-profit">Yield: +€${(t.profit || 0).toFixed(2)}</div>
+                    </div>`).join('');
+            }
+        };
+
+        // 7. EXPORTED FUNCTIONS FOR HTML BUTTONS
+        window.toggleTheme = () => {
+            const isDark = document.getElementById('theme-toggle').checked;
+            if(isDark) {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+        window.saveWalletAddress = async () => {
+            const address = document.getElementById('user-crypto-wallet').value;
+            if(!address || address.length < 10) return UI.showToast("Моля, въведете валиден портфейл.", "error");
+            
+            try {
+                await set(ref(db, `users/${AppState.user.id}/cryptoAddress`), address);
+                UI.showToast("Крипто портфейлът е запазен успешно!", "success");
+                UI.closeModal('modal-settings-user');
+            } catch(e) {
+                UI.showToast("Грешка при запазване. Опитайте пак.", "error");
+            }
+        };
+
+        window.processWithdrawal = async () => {
+            const amount = parseFloat(document.getElementById('wd-amount').value);
+            const userBal = AppState.user.data.balance || 0;
+            const wallet = AppState.user.data.cryptoAddress;
+
+            if(!wallet || wallet === "") {
+                UI.showToast("Първо добавете Крипто Портфейл от настройките (Горе вдясно)!", "error");
+                return;
+            }
+            if(isNaN(amount) || amount < 50) return UI.showToast("Минимумът за теглене е €50.", "error");
+            if(amount > userBal) return UI.showToast("Недостатъчен баланс.", "error");
+
+            try {
+                // Request structure sent to DB
+                await push(ref(db, 'withdrawal_requests'), {
+                    userId: AppState.user.id,
+                    address: wallet,
+                    amountRequested: amount,
+                    status: 'pending',
+                    timestamp: serverTimestamp()
+                });
+                
+                await set(ref(db, `users/${AppState.user.id}/balance`), userBal - amount);
+                document.getElementById('wd-amount').value = '';
+                UI.showToast("Заявката е изпратена успешно. Очаквайте превод.", "success");
+            } catch (error) { UI.showToast("Грешка при изпращане на заявката.", "error"); }
+        };
+
+        window.switchTab = (id, title, el) => UI.switchTab(id, title, el);
+        window.openModal = (id) => UI.openModal(id);
+        window.closeModal = (id) => UI.closeModal(id);
+        window.showToast = (msg, type) => UI.showToast(msg, type);
+        window.handleLogout = () => AuthLogic.logout();
+        window.copyToClipboard = (txt, msg) => { navigator.clipboard.writeText(txt); UI.showToast(msg, "success"); };
+        window.confirmDeposit = () => { UI.closeModal('modal-deposit'); UI.showToast("Заявката е регистрирана. Очаква се потвърждение в мрежата.", "info"); };
+
+        // 8. INITIALIZE APP
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthLogic.init();
+            
+            // Load theme preference
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                const toggle = document.getElementById('theme-toggle');
+                if(toggle) toggle.checked = true;
+            }
+        });
+    </script>
+</body>
+</html>
